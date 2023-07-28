@@ -1,0 +1,36 @@
+name: "Push to Prodvana"
+description: "Push a new image version to a Prodvana service"
+inputs:
+  app:
+    description: "name of the app the service belongs to"
+    required: true
+  service:
+    description: "name of the service to push"
+    required: true
+  docker_image:
+    description: "Comma separated key-value pairs of '<program_name>=<docker_image>'. if the service has a single program, you can pass the single <docker_image> directly"
+    required: true
+  wait_channels:
+    description: "comma separated list of name of release channel(s) to wait for before considering the push complete"
+    required: false
+  auth_context:
+    description: "pvnctl auth context to use. If you're using this Action with init-pvnctl, leave as the default"
+    required: true
+    default: "default"
+outputs: {}
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - name: Push Service
+      shell: bash
+      run: |
+        set -euxo pipefail
+
+        CMD="pvnctl services --app=${{ inputs.app }} update-images ${{ inputs.service }} --image ${{ inputs.docker_image }}"
+        if [[ -n "${{ inputs.wait_channels }}" ]]; then
+            CMD="$CMD --wait-channel=${{ inputs.wait_channels }}"
+        fi
+
+        pvnctl auth context use ${{ inputs.auth_context }}
+        eval "${CMD}"
