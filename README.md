@@ -25,12 +25,12 @@ This action simplifies pushing a new container image to a [Prodvana](https://pro
 ```yaml
 steps:
   # pvnctl must be installed in your Action environment for push-to-prodvana
-  - uses: prodvana/init-pvnctl@v0.1.0 
+  - uses: prodvana/init-pvnctl-action@v0.1.0 
     with:
       org: my-org
       api_token: ${{ secrets.YOUR_PRODVANA_API_TOKEN }}
 
-  - uses: prodvana/push-to-prodvana@v0.1.0
+  - uses: prodvana/push-to-prodvana@-actionv0.1.0
     with:
       app: my-application
       service: my-service
