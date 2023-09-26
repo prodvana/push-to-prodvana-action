@@ -15,7 +15,8 @@ This action simplifies pushing a new container image to a [Prodvana](https://pro
 | ------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | app           | (required) | Name of the Application containing the service being updated                                                                                             |
 | service       | (required) | Name of the Service to update                                                                                                                            |
-| docker_image  | (required) | Comma separated key-value pairs of '<program_name>=<docker_image>'. if the service has a single program, you can pass the single <docker_image> directly |
+| docker_image  | (optional) | Comma separated key-value pairs of '<program_name>=<docker_image>'. if the service has a single program, you can pass the single <docker_image> directly |
+| parameters    | (optional) | Comma separated key-value pairs of '<parameter_name>=<value>'.                                                                                           |
 | wait_channels | (optional) | Comma separated list of the names of Release Channels to wait for before considering this push complete                                                  |
 | auth_context  | default    | pvnctl auth context to use. If you're using this action with init-pvnctl, leave as the default                                                           |
 
@@ -30,10 +31,18 @@ steps:
       org: my-org
       api_token: ${{ secrets.YOUR_PRODVANA_API_TOKEN }}
 
-  - uses: prodvana/push-to-prodvana@-actionv0.1.0
+  - uses: prodvana/push-to-prodvana-action@v0.2.0
     with:
       app: my-application
       service: my-service
+      parameters: serviceImage=index.dockerhub.com/python:3.11.4-slim-bookworm 
+      wait_channels: staging # wait for the staging release channel to complete before considering this complete
+
+  # Deprecated image update mechanism (use parameters instead)
+  - uses: prodvana/push-to-prodvana-action@v0.1.0
+    with:
+      app: my-application
+      service: my-deprecated-service
       docker_image: index.dockerhub.com/python:3.11.4-slim-bookworm 
       wait_channels: staging # wait for the staging release channel to complete before considering this complete
 ```
