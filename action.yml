@@ -9,7 +9,10 @@ inputs:
     required: true
   docker_image:
     description: "Comma separated key-value pairs of '<program_name>=<docker_image>'. if the service has a single program, you can pass the single <docker_image> directly"
-    required: true
+    required: false
+  parameters:
+    description: "Comma separated key-value pairs of '<parameter_name>=<value>'."
+    required: false
   wait_channels:
     description: "comma separated list of name of release channel(s) to wait for before considering the push complete"
     required: false
@@ -27,7 +30,20 @@ runs:
       run: |
         set -euxo pipefail
 
-        CMD="pvnctl services --app=${{ inputs.app }} update-images ${{ inputs.service }} --image ${{ inputs.docker_image }}"
+        CMD="pvnctl services --app=${{ inputs.app }}"
+
+        if [[ -n "${{ inputs.parameters }}" ]]; then
+            CMD="$CMD push2 ${{ inputs.service }}"
+
+            # Split parameters on comma and send each parameter as a separate arg
+            IFS="," read -ra PARAM_SPLIT <<< "${{ inputs.parameters }}"
+            for param in "${PARAM_SPLIT[@]}"; do
+                CMD="$CMD --param ${param}"
+            done
+        elif [[ -n "${{ inputs.docker_image }}" ]]; then
+            CMD="$CMD update-images ${{ inputs.service }} --image ${{ inputs.docker_image }}"
+        fi
+
         if [[ -n "${{ inputs.wait_channels }}" ]]; then
             CMD="$CMD --wait-channel=${{ inputs.wait_channels }}"
         fi
