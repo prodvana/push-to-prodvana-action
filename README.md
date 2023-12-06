@@ -26,16 +26,16 @@ This action simplifies pushing a new container image to a [Prodvana](https://pro
 ```yaml
 steps:
   # pvnctl must be installed in your Action environment for push-to-prodvana
-  - uses: prodvana/init-pvnctl-action@v0.1.0 
+  - uses: prodvana/init-pvnctl-action@v0.1.0
     with:
       org: my-org
       api_token: ${{ secrets.YOUR_PRODVANA_API_TOKEN }}
 
-  - uses: prodvana/push-to-prodvana-action@v0.2.0
+  - uses: prodvana/push-to-prodvana-action@v0.2.1
     with:
       app: my-application
       service: my-service
-      parameters: serviceImage=index.dockerhub.com/python:3.11.4-slim-bookworm 
+      parameters: serviceImage=index.dockerhub.com/python:3.11.4-slim-bookworm
       wait_channels: staging # wait for the staging release channel to complete before considering this complete
 
   # Deprecated image update mechanism (use parameters instead)
@@ -43,6 +43,6 @@ steps:
     with:
       app: my-application
       service: my-deprecated-service
-      docker_image: index.dockerhub.com/python:3.11.4-slim-bookworm 
+      docker_image: index.dockerhub.com/python:3.11.4-slim-bookworm
       wait_channels: staging # wait for the staging release channel to complete before considering this complete
 ```
